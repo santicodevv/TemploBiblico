@@ -11,17 +11,15 @@ public class IglesiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     {
     }
 
-    public DbSet<Miembro> Miembros => Set<Miembro>();
-    public DbSet<Ministerio> Ministerios => Set<Ministerio>();
-    public DbSet<Evento> Eventos => Set<Evento>();
-    public DbSet<Asistencia> Asistencias => Set<Asistencia>();
-    public DbSet<Seguimiento> Seguimientos => Set<Seguimiento>();
+    public DbSet<Member> Members => Set<Member>();
+    public DbSet<Ministry> Ministries => Set<Ministry>();
+    public DbSet<Event> Events => Set<Event>();
+    public DbSet<Attendance> Attendances => Set<Attendance>();
+    public DbSet<FollowUp> FollowUps => Set<FollowUp>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        // Apply all configurations from this assembly
         builder.ApplyConfigurationsFromAssembly(typeof(IglesiaDbContext).Assembly);
     }
 }

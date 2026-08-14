@@ -4,26 +4,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Iglesia.Infrastructure.Persistence.Configurations;
 
-public class MinisterioConfiguration : IEntityTypeConfiguration<Ministerio>
+public class MinistryConfiguration : IEntityTypeConfiguration<Ministry>
 {
-    public void Configure(EntityTypeBuilder<Ministerio> builder)
+    public void Configure(EntityTypeBuilder<Ministry> builder)
     {
-        builder.ToTable("Ministerios");
+        builder.ToTable("Ministries");
 
         builder.HasKey(m => m.Id);
 
-        builder.Property(m => m.Nombre)
+        builder.Property(m => m.Name)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(m => m.Responsable)
+        builder.Property(m => m.Leader)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(m => m.Descripcion)
+        builder.Property(m => m.Description)
             .HasMaxLength(500);
 
-        builder.HasIndex(m => m.Nombre)
+        builder.HasIndex(m => m.Name)
             .IsUnique();
     }
 }

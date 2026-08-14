@@ -4,28 +4,28 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Iglesia.Infrastructure.Persistence.Configurations;
 
-public class EventoConfiguration : IEntityTypeConfiguration<Evento>
+public class EventConfiguration : IEntityTypeConfiguration<Event>
 {
-    public void Configure(EntityTypeBuilder<Evento> builder)
+    public void Configure(EntityTypeBuilder<Event> builder)
     {
-        builder.ToTable("Eventos");
+        builder.ToTable("Events");
 
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Titulo)
+        builder.Property(e => e.Title)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(e => e.Descripcion)
+        builder.Property(e => e.Description)
             .HasMaxLength(1000);
 
-        builder.Property(e => e.Responsable)
+        builder.Property(e => e.Organizer)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(e => e.Ubicacion)
+        builder.Property(e => e.Location)
             .HasMaxLength(300);
 
-        builder.HasIndex(e => e.Fecha);
+        builder.HasIndex(e => e.Date);
     }
 }

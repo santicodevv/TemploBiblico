@@ -1,5 +1,4 @@
-// TODO: Add TypeScript types as features are implemented
-
+// API Response types
 export interface ApiResponse<T> {
   data: T;
   success: boolean;
@@ -14,55 +13,55 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-// Placeholder types - implement as needed
-export interface Miembro {
+// Domain types
+export interface Member {
   id: string;
-  nombres: string;
-  apellidos: string;
-  fechaNacimiento?: string;
-  telefono?: string;
-  direccion?: string;
+  firstName: string;
+  lastName: string;
+  birthDate?: string;
+  phone?: string;
+  address?: string;
   email?: string;
-  fechaConversion?: string;
-  fechaBautismo?: string;
-  estado: 'Activo' | 'Inactivo';
-  foto?: string;
-  ministerioId?: string;
+  conversionDate?: string;
+  baptismDate?: string;
+  status: 'Active' | 'Inactive';
+  photoUrl?: string;
+  ministryId?: string;
 }
 
-export interface Evento {
+export interface Event {
   id: string;
-  titulo: string;
-  descripcion?: string;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
-  responsable: string;
-  ubicacion?: string;
+  title: string;
+  description?: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  organizer: string;
+  location?: string;
 }
 
-export interface Asistencia {
+export interface Attendance {
   id: string;
-  miembroId: string;
-  eventoId: string;
-  fecha: string;
-  estado: 'Presente' | 'Ausente' | 'Excusado';
-  observacion?: string;
+  memberId: string;
+  eventId: string;
+  date: string;
+  status: 'Present' | 'Absent' | 'Excused';
+  notes?: string;
 }
 
-export interface Seguimiento {
+export interface FollowUp {
   id: string;
-  miembroId: string;
-  fecha: string;
-  motivo: string;
-  observacion?: string;
-  proximaVisita?: string;
-  responsable: string;
+  memberId: string;
+  date: string;
+  reason: string;
+  notes?: string;
+  nextVisitDate?: string;
+  assignedTo: string;
 }
 
-export interface Ministerio {
+export interface Ministry {
   id: string;
-  nombre: string;
-  responsable: string;
-  descripcion?: string;
+  name: string;
+  leader: string;
+  description?: string;
 }
