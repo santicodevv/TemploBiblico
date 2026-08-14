@@ -80,7 +80,57 @@ docs(readme): update setup instructions
 ```
 
 ### Branches
-- `main` - Producción
-- `develop` - Desarrollo
-- `feature/nombre` - Nuevas funcionalidades
+- `master` - Producción (protegido, solo PRs)
+- `feature/nombre-modulo` - Nuevas funcionalidades
 - `fix/nombre` - Correcciones
+
+**Nombres de branches por módulo:**
+| Módulo | Branch |
+|--------|--------|
+| Miembros | `feature/miembros-crud` |
+| Asistencia + Eventos | `feature/asistencia-eventos` |
+| Seguimiento Pastoral | `feature/seguimiento-pastoral` |
+| Auth + Roles | `feature/auth-roles` |
+| Reportes | `feature/reportes` |
+
+### Branch Protection (master)
+- No se permiten commits directos a `master`
+- Todo cambio requiere Pull Request
+- Requiere al menos 1 aprobación
+- CI debe pasar (backend-ci, frontend-ci)
+- Reviews obsoletos se descartan con nuevos commits
+
+## Flujo de Trabajo
+
+### Herramientas
+- **Trello**: Gestión de tareas y asignaciones
+- **GitHub**: Código, PRs y CI/CD
+- **Issues de GitHub**: Documentación técnica de respaldo
+
+### Proceso
+```
+1. Tomar card en Trello → Mover a "In Progress"
+2. Crear branch: git checkout -b feature/nombre-modulo
+3. Desarrollar y hacer commits
+4. Abrir PR con título claro (ej: "Miembros: CRUD completo + foto")
+5. CI corre automáticamente
+6. Lead mueve card a "In Review"
+7. Code review y aprobación
+8. Merge a master
+9. Lead mueve card a "Done"
+```
+
+### Título del PR
+El título del PR debe coincidir con la card de Trello para fácil identificación:
+- `Miembros: CRUD completo + foto`
+- `Asistencia + Eventos: calendario y control`
+- `Seguimiento Pastoral: registro y pendientes`
+- `Auth + Roles: login y permisos`
+- `Reportes: dashboard y exportación`
+
+### CI/CD
+Los workflows de GitHub Actions corren automáticamente:
+- **backend-ci**: Build y validación del backend (.NET)
+- **frontend-ci**: Build y validación del frontend (React)
+
+Ambos deben pasar antes de poder hacer merge.
