@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+using Iglesia.Application.Dtos;
 using Iglesia.Application.Interfaces;
-using Iglesia.Application.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Iglesia.Api.Controllers;
 
@@ -18,20 +18,26 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
     {
-        var result = await _authService.LoginAsync(dto);
-        if (!result.Exitoso)
-            return Unauthorized(new { mensaje = result.Error });
+        var resultado = await _authService.LoginAsync(dto);
 
-        return Ok(result.TokenResponse);
+        if (!resultado.Exitoso)
+        {
+            return BadRequest(new { mensaje = resultado.Error });
+        }
+
+        return Ok(resultado.TokenResponse);
     }
 
-    [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto dto)
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
     {
-        var result = await _authService.RefreshTokenAsync(dto);
-        if (!result.Exitoso)
-            return BadRequest(new { mensaje = result.Error });
+        var resultado = await _authService.RefreshTokenAsync(dto);
 
-        return Ok(result.TokenResponse);
+        if (!resultado.Exitoso)
+        {
+            return BadRequest(new { mensaje = resultado.Error });
+        }
+
+        return Ok(resultado.TokenResponse);
     }
 }
