@@ -1,19 +1,19 @@
-
-namespace Iglesia.Aplication.Dtos;
+namespace Iglesia.Application.Dtos;
 
 public record LoginRequestDto(
     string Email,
     string Password
 );
 
-public record RefreshTokenRequestDto (
-    string token,
+public record RefreshTokenRequestDto(
+    string Token,
     string RefreshToken
 );
 
 public record AuthResponseDto(
-    string token,
+    string Token,
     string RefreshToken,
+    DateTime Expiracion,
     string Email,
     string Rol,
     int? MinisterioId
