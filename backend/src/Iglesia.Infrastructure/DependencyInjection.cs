@@ -12,17 +12,15 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Database
+        // Database (En Memoria para desarrollo rápido)
         services.AddDbContext<IglesiaDbContext>(options =>
-            options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(typeof(IglesiaDbContext).Assembly.FullName)));
+            options.UseInMemoryDatabase("IglesiaDb_Dev"));
 
         // Identity
         services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
+            options.Password.RequireLowercase = true;  
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequiredLength = 8;

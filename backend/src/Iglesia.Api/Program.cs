@@ -3,16 +3,14 @@ using Iglesia.Api.Authorization;
 using Iglesia.Api.Services;
 using Iglesia.Application;
 using Iglesia.Application.Common.Interfaces;
-using Iglesia.Application.Interfaces;
 using Iglesia.Domain.Entities;
 using Iglesia.Infrastructure;
+using Iglesia.Infrastructure.Identity;
 using Iglesia.Infrastructure.Persistence;
-using Iglesia.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,54 +18,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// ASP.NET Core Identity
-builder.Services.AddIdentity<Usuario, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+// Identity configuration (Corregido con ApplicationUser y ApplicationRole)
+builder.Services.AddIdentityCore<ApplicationUser>()
+    .AddRoles<ApplicationRole>()
+    .AddClaimsPrincipalFactory<UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>>()
+    .AddEntityFrameworkStores<IglesiaDbContext>()
     .AddDefaultTokenProviders();
 
-// HTTP Context & Services
+// HTTP Context & Custom Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDateTime, DateTimeService>();
 
-// Servicio de Autenticación personalizado
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 // Controllers
 builder.Services.AddControllers();
 
-// Swagger / OpenAPI con soporte para JWT
+// Swagger / Endpoints
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Iglesia API", Version = "v1" });
-
-    // Configuración del botón Authorize 🔒 para colocar el Token JWT
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Ingresa tu token JWT en el formato: Bearer {tu_token}"
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+builder.Services.AddSwaggerGen();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -118,7 +86,7 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// Pipeline de Swagger
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -134,39 +102,40 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Seeder Automático: Crea roles y el usuario admin si no existen
+// Seeder Automático: Crea roles y usuario inicial si no existen
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        var userManager = services.GetRequiredService<UserManager<Usuario>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetService<RoleManager<ApplicationRole>>();
 
-        if (!await roleManager.RoleExistsAsync("Admin"))
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
-
-        if (!await roleManager.RoleExistsAsync("Lider"))
-            await roleManager.CreateAsync(new IdentityRole("Lider"));
-
-        var adminEmail = "admin@iglesia.com";
-        var usuarioExistente = await userManager.FindByEmailAsync(adminEmail);
-
-        if (usuarioExistente == null)
+        if (userManager != null && roleManager != null)
         {
-            var nuevoAdmin = new Usuario
-            {
-                UserName = adminEmail,
-                Email = adminEmail,
-                NombreCompleto = "Administrador Sistema",
-                EmailConfirmed = true,
-                MinisterioId = 1
-            };
+            if (!await roleManager.RoleExistsAsync("Admin"))
+                await roleManager.CreateAsync(new ApplicationRole { Name = "Admin" });
 
-            var resultado = await userManager.CreateAsync(nuevoAdmin, "Admin123!");
-            if (resultado.Succeeded)
+            if (!await roleManager.RoleExistsAsync("Lider"))
+                await roleManager.CreateAsync(new ApplicationRole { Name = "Lider" });
+
+            var adminEmail = "admin@iglesia.com";
+            var usuarioExistente = await userManager.FindByEmailAsync(adminEmail);
+
+            if (usuarioExistente == null)
             {
-                await userManager.AddToRoleAsync(nuevoAdmin, "Admin");
+                var nuevoAdmin = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var resultado = await userManager.CreateAsync(nuevoAdmin, "Admin123!");
+                if (resultado.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(nuevoAdmin, "Admin");
+                }
             }
         }
     }
