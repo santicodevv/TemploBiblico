@@ -1,5 +1,8 @@
+using Iglesia.Application.Common.Interfaces;
+using Iglesia.Infrastructure.Repositories;
 using Iglesia.Infrastructure.Identity;
 using Iglesia.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +34,7 @@ public static class DependencyInjection
         .AddRoles<ApplicationRole>()
         .AddEntityFrameworkStores<IglesiaDbContext>();
 
-        // TODO: Register repository implementations here
-        // services.AddScoped<IMiembroRepository, MiembroRepository>();
+       services.AddScoped<IMemberRepository, MemberRepository>();
 
         return services;
     }
