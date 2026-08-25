@@ -31,8 +31,9 @@ public class MemberRepository : IMemberRepository
         Guid? ministryId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<Member> query = _context.Members
-            .Include(m => m.Ministry);
+        var query = _context.Members
+            .Include(m => m.Ministry)
+            .AsQueryable();
 
         if (status.HasValue)
         {
