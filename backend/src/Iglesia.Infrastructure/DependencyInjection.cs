@@ -1,6 +1,10 @@
+using Iglesia.Application.Common.Interfaces;
 using Iglesia.Infrastructure.Identity;
 using Iglesia.Infrastructure.Persistence;
+using Iglesia.Infrastructure.Repositories;
+
 using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +20,8 @@ public static class DependencyInjection
         services.AddDbContext<IglesiaDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(typeof(IglesiaDbContext).Assembly.FullName)));
+                b => b.MigrationsAssembly(
+                    typeof(IglesiaDbContext).Assembly.FullName)));
 
         // Identity
         services.AddIdentityCore<ApplicationUser>(options =>
@@ -26,13 +31,14 @@ public static class DependencyInjection
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequiredLength = 8;
+
             options.User.RequireUniqueEmail = true;
         })
         .AddRoles<ApplicationRole>()
         .AddEntityFrameworkStores<IglesiaDbContext>();
 
-        // TODO: Register repository implementations here
-        // services.AddScoped<IMiembroRepository, MiembroRepository>();
+        // Repositories
+        services.AddScoped<IMemberRepository, MemberRepository>();
 
         return services;
     }
